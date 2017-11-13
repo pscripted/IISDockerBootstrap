@@ -2,6 +2,8 @@
 
 These commands are used in conjunction with docker to take runtime configuration from a docker environment and build a Web.Config and start IIS.
 
+## Add the scripts to the container and change the entrypoint
+
 Both files must be copied into a docker image in the DOCKERFILE, and the entrypoint of the image changed to iisbootstrap.ps1
 
 ``` Dockerfile
@@ -11,10 +13,13 @@ COPY scripts\ReplaceWebConfigToken.ps1 .\
 ENTRYPOINT /scripts/iisbootstrap.ps1
 ```
 
-## Using Tokens
+## Add Tokens to Web.Config
 
-The Web.Config added to the docker image should be tokenized with tokens such as ```@@dbserver@@``` or ```@@svcpassword@@```. Both local environment variables inside the container, and the docker secrets it has access to will be searched, and the tokens replaced with configuration and saved before IIS is started.
-**Environment variables and/or secrets with matching names must added when the service is created in Docker as well**
+The Web.Config added to the docker image should be tokenized with tokens such as ```@@dbserver@@``` or ```@@svcpassword@@```. Both local environment variables inside the container, and the docker secrets it has access to will be searched, and the tokens replaced with configuration and saved before IIS is started. This can be accomplished with a Web.Config transforms in the solution, or statically creating the Web.Config with tokens as needed.
+
+## Add the variables to the Docker service
+
+### Environment variables and/or secrets with matching names must added when the service is created in Docker as well**
 
 ``` bash
 docker service create -e dbserver=proddb01 --secret=svcpassword  testiis:latest
